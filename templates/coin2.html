@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="static/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="static/images/crypto.jpg" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <div class="container-scroller">
@@ -200,8 +201,30 @@
                       <div class="col-lg-10 grid-margin stretch-card">
                         <div class="card">
                           <div class="card-body">
-                            <h4 class="card-title">Line chart</h4>
+                            <h4 class="card-title">Coin 2</h4>
                             <canvas id="lineChart" style="height:250px"></canvas>
+                            <script>
+                              const labels = {{labels | safe }}
+                              const data = {
+                                labels: labels,
+                                datasets: [{
+                                  label: 'Value in USD',
+                                  backgroundColor: 'rgb(255, 99, 132)',
+                                  borderColor: 'rgb(255, 99, 132)',
+                                  data: {{values | safe}} ,
+                                }]
+                              };
+                                const config = {
+                                  type: 'line',
+                                  data,
+                                  options: {}
+                                };
+                                // === include 'setup' then 'config' above ===
+                                var myChart = new Chart(
+                                  document.getElementById('lineChart'),
+                                  config
+                                );
+                            </script>
                           </div>
                         </div>
                       </div>        
@@ -229,7 +252,7 @@
     <script src="static/vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->
     <!-- Plugin js for this page -->
-    <script src="static/vendors/chart.js/Chart.min.js"></script>
+
     <script src="static/vendors/progressbar.js/progressbar.min.js"></script>
     <script src="static/vendors/jvectormap/jquery-jvectormap.min.js"></script>
     <script src="static/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
