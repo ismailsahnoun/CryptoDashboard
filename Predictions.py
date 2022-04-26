@@ -1,22 +1,13 @@
-import tensorflow as tf
 import pickle as pkl
 from requests import get
 import numpy as np
-class Predictor():
-    def __init__(self):
-        self.model=tf.keras.models.load_model('./models/minutes-model-60to2')
-        self.openscaler=pkl.load(open('models/openscaler','rb'))
-    def predict_values(self,data):
-        output=self.model.predict(data)
-        output=self.openscaler.inverse_transform(output)
-        return output[0]
 class Fetcher():
-    def __init__(self,coinsym):
+    def __init__(self,coinsym,openscaler,closescaler,highscaler,lowscaler):
         self.coin=coinsym
-        self.openscaler=pkl.load(open('models/openscaler','rb'))
-        self.closescaler=pkl.load(open('models/closescaler','rb'))
-        self.highscaler=pkl.load(open('models/highscaler','rb'))
-        self.lowscaler=pkl.load(open('models/lowscaler','rb'))
+        self.openscaler=openscaler
+        self.closescaler=closescaler
+        self.highscaler=highscaler
+        self.lowscaler=lowscaler
     def getlast60(self):
         openlist=[]
         closelist=[]
@@ -58,4 +49,4 @@ class Fetcher():
             openlist.append([data[i][1]])
         openlist=np.array(openlist)
         return openlist
-
+    

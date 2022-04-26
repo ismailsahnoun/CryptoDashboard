@@ -36,35 +36,35 @@
             <span class="nav-link">Available CryptoCurrency </span>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="coin1">
+            <a class="nav-link" href="/bitcoin">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
-              <span class="menu-title">coin1</span>
+              <span class="menu-title">Bitcoin</span>
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="coin2">
+            <a class="nav-link" href="/solana">
               <span class="menu-icon">
                 <i class="mdi mdi-playlist-play"></i>
               </span>
-              <span class="menu-title">coin2</span>
+              <span class="menu-title">Solana</span>
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="/soon">
+            <a class="nav-link" href="/monero">
               <span class="menu-icon">
                 <i class="mdi mdi-table-large"></i>
               </span>
-              <span class="menu-title">Other Coin</span>
+              <span class="menu-title">Monero</span>
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="/soon">
+            <a class="nav-link" href="/avalanch">
               <span class="menu-icon">
                 <i class="mdi mdi-chart-bar"></i>
               </span>
-              <span class="menu-title">Other Coin 2 </span>
+              <span class="menu-title">Avalanch</span>
             </a>
           </li>
         </ul>
@@ -195,20 +195,20 @@
                   <div class="card-body">
                     <div class="d-flex flex-row justify-content-between">
                       <h4 class="card-title mb-1">Value prediction </h4>
-                      <p class="text-muted mb-1">in 2 hours </p>
+                      <p class="text-muted mb-1">in 5 minutes </p>
                     </div>
                     <div class="row">
                       <div class="col-lg-10 grid-margin stretch-card">
                         <div class="card">
                           <div class="card-body">
-                            <h4 class="card-title">Coin 2</h4>
+                            <h4 class="card-title">Bitcoin</h4>
                             <canvas id="lineChart" style="height:250px"></canvas>
                             <script>
-                              const labels = {{labels | safe }}
+                              const labels ={{labels | safe }}
                               const data = {
                                 labels: labels,
                                 datasets: [{
-                                  label: 'Value in USD',
+                                  label: 'Predicted Values in USD',
                                   backgroundColor: 'rgb(255, 99, 132)',
                                   borderColor: 'rgb(255, 99, 132)',
                                   data: {{values | safe}} ,

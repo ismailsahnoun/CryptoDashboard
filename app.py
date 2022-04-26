@@ -1,30 +1,32 @@
 from flask import Flask, render_template,redirect,url_for,request
-from Predictions import Predictor
 from Predictions import Fetcher
 from datetime import datetime
 from datetime import timedelta
-model=Predictor()
+import pickle as pkl
+from tensorflow.keras.models import load_model
+from requests import get
+
 app = Flask(__name__)
-@app.route("/")
-def welcome() :
-    data = [
-        ("01-02-2021",3309),
-        ("02-02-2021",2609),
-        ("03-02-2021",2409),
-        ("04-02-2021",6009),
-        ("05-02-2021",7309),
-        ("06-02-2021",8309),
-        ("07-02-2021",6043),
-    ]
-    
-    labels = [row[0] for row in data]
-    values = [row[1] for row in data]
-    return render_template("index.html", labels=labels, values=values)
-@app.route("/<coin>")
-def coin(coin):
-    fetcher=Fetcher("btcusd")
+
+model=load_model("./models/minutes-model-60to2")
+apikey="823616fee413d23338ea60dcdb269e52"
+liveurl="http://api.coinlayer.com/live?access_key={}&target=usd&symbols=".format(apikey)
+
+bitcoinopenscaler=pkl.load(open("./models/btcscalers/openscaler","rb"))
+bitcoinclosescaler=pkl.load(open("./models/btcscalers/closescaler","rb"))
+bitcoinlowscaler=pkl.load(open("./models/btcscalers/lowscaler","rb"))
+bitcoinhighscaler=pkl.load(open("./models/btcscalers/highscaler","rb"))
+
+@app.route("/bitcoin")
+def bitcoin():
+    solanaprice=get("https://api.cryptowat.ch/markets/kraken/solusd/price").json()['result']['price']
+    avaxprice=get("https://api.cryptowat.ch/markets/kraken/avaxusd/price").json()['result']['price']
+    moneroprice=get("https://api.cryptowat.ch/markets/kraken/ltcusd/price").json()['result']['price']
+    fetcher=Fetcher("btcusd",bitcoinopenscaler,bitcoinclosescaler,bitcoinhighscaler,bitcoinlowscaler)
     histodata=fetcher.getlast60()
-    predicted=model.predict_values(histodata)
+    predicted=model.predict(histodata)
+    predicted=bitcoinopenscaler.inverse_transform(predicted)
+    predicted=predicted[0]
     last3=fetcher.getlast3()
     print(last3)
     data=[]
@@ -37,9 +39,56 @@ def coin(coin):
     labels = [row[0] for row in data]
     values = [row[1] for row in data]
 
-    return render_template("{}.html".format(coin), labels=labels, values=values)
+    return render_template("bitcoin.html", labels=labels, values=values,solana=solanaprice,avax=avaxprice,monero=moneroprice)
 
-    
+@app.route("/solana")
+def solana():
+    fetcher=Fetcher("solusd",solanaopenscaler,solanaclosescaler,solanahighscaler,solanalowscaler)
+    histodata=fetcher.getlast60()
+    predicted=model.predict(histodata)
+    predicted=solanaopenscaler.inverse_transform(predicted)
+    predicted=predicted[0]
+    last3=fetcher.getlast3()
+    data=[]
+    now=datetime.now()
+    data.append([(now-timedelta(minutes=2)).strftime("%H:%M"),last3[0][0]])
+    data.append([(now-timedelta(minutes=1)).strftime("%H:%M"),last3[1][0]])
+    data.append([now.strftime("%H:%M"),last3[2][0]])
+    data.append([(now+timedelta(minutes=1)).strftime("%H:%M"),predicted[0]])
+    data.append([(now+timedelta(minutes=2)).strftime("%H:%M"),predicted[1]])
+    labels = [row[0] for row in data]
+    values = [row[1] for row in data]
+    return render_template("solana.html", labels=labels, values=values)
+@app.route("/monero")
+def monero():
+    fetcher=Fetcher("xmrusd")
+    histodata=fetcher.getlast60()
+    predicted=model.predict_values(histodata)
+    last3=fetcher.getlast3()
+    data=[]
+    now=datetime.now()
+    data.append([(now-timedelta(minutes=2)).strftime("%H:%M"),last3[0][0]])
+    data.append([(now-timedelta(minutes=1)).strftime("%H:%M"),last3[1][0]])
+    data.append([now.strftime("%H:%M"),last3[2][0]])
+    data.append([(now+timedelta(minutes=1)).strftime("%H:%M"),predicted[0]])
+    labels = [row[0] for row in data]
+    values = [row[1] for row in data]
+    return render_template("monero.html", labels=labels, values=values)
+@app.route("/avalanche")
+def avalanche():
+    etcher=Fetcher("avaxusd")
+    histodata=fetcher.getlast60()
+    predicted=model.predict_values(histodata)
+    last3=fetcher.getlast3()
+    data=[]
+    now=datetime.now()
+    data.append([(now-timedelta(minutes=2)).strftime("%H:%M"),last3[0][0]])
+    data.append([(now-timedelta(minutes=1)).strftime("%H:%M"),last3[1][0]])
+    data.append([now.strftime("%H:%M"),last3[2][0]])
+    data.append([(now+timedelta(minutes=1)).strftime("%H:%M"),predicted[0]])
+    labels = [row[0] for row in data]
+    values = [row[1] for row in data]
+    return render_template("avalanche.html", labels=labels, values=values)
 if __name__== '__main__' :
     app.run(debug=True)
     
