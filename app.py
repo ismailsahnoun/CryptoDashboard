@@ -16,7 +16,12 @@ bitcoinopenscaler=pkl.load(open("./models/btcscalers/openscaler","rb"))
 bitcoinclosescaler=pkl.load(open("./models/btcscalers/closescaler","rb"))
 bitcoinlowscaler=pkl.load(open("./models/btcscalers/lowscaler","rb"))
 bitcoinhighscaler=pkl.load(open("./models/btcscalers/highscaler","rb"))
-
+@app.route("/register")
+def register():
+    return render_template("register.html")
+@app.route("/login")
+def login():
+    return render_template("login.html")
 @app.route("/bitcoin")
 def bitcoin():
     solanaprice=get("https://api.cryptowat.ch/markets/kraken/solusd/price").json()['result']['price']
